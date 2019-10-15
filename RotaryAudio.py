@@ -6,5 +6,16 @@ from pathlib import Path
 audiolocation = Path("/home/pi/Music")
 
 audio = {
-    "1234": "wakeUp.m4a"
+    "dialtone":"US_dial_tone.ogg",
+    "1031":"Spooky Scary Skeletons (Remix) - Extended Mix.mp3",
+    "1003":"German_national_anthem_performed_by_the_US_Navy_Band.ogg",
+    "2346":"C418 - Minecraft - Volume Alpha - 22 Beginning.mp3",
+    "2418":"C418 - Minecraft - Volume Alpha - 08 Minecraft.mp3",
+    "2455":"might quit - Bill Wurtz.mp3",
+    "3666":"Doot - E1M1 [Knee-Deep in the Doot].mp3",
+    "7346":"Rammstein - Untitled - Radio.mp3",
+    "7936":"C418 - Minecraft - Volume Alpha - 18 Sweden.mp3",
+    "9253":"wakeUp.m4a",
+    "0501":"Gimn_Sovetskogo_Soyuza_(1944_Stalinist_lyrics).oga",
+    "0704":"Star_Spangled_Banner_instrumental.ogg"
 }
