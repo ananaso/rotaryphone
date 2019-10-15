@@ -23,6 +23,35 @@ class RotaryPhone:
         self.dialed_number = -1
         self.extension = ""
         self.hook = Button(22, False)
+        self.dialtone = None
+
+    def reset_extension(self):
+        """
+        Helper function to reset dialed extension
+        """
+        self.extension = ""
+        self.dialtone_start()
+
+    def dialtone_start(self):
+        """
+        Helper function to start the dialtone
+        """
+        if self.dialtone is None:
+            filename = RotaryAudio.audio["dialtone"]
+            filepath = RotaryAudio.audiolocation.joinpath(filename)
+            self.dialtone = subprocess.Popen(["mpv",
+                                              "--really-quiet",
+                                              "--ao=sdl",
+                                              "--loop-file=inf",
+                                              filepath])
+
+    def dialtone_stop(self):
+        """
+        Helper function to stop the dialtone
+        """
+        if self.dialtone is not None:
+            self.dialtone.terminate()
+            self.dialtone = None
 
     def rotary_status(self):
         """
@@ -85,7 +114,9 @@ class RotaryPhone:
                 filename = RotaryAudio.audio[self.extension]
                 filepath = RotaryAudio.audiolocation.joinpath(filename)
                 # play back audio with mpv
-                audioplayback = subprocess.Popen(["mpv", "--really-quiet", filepath])
+                audioplayback = subprocess.Popen(["mpv",
+                                                  "--really-quiet",
+                                                  filepath])
                 # stop audio playback if hook is pressed
                 while audioplayback.poll() is None:
                     if self.hook.is_pressed:
@@ -94,15 +125,10 @@ class RotaryPhone:
                 print("Audio for", self.extension, "not found")
             self.reset_extension()
 
-    def reset_extension(self):
-        """
-        Helper function to reset dialed extension
-        """
-        self.extension = ""
-
 if __name__ == "__main__":
     phone = RotaryPhone()
-    phone.hook.when_pressed = phone.reset_extension
+    phone.hook.when_released = phone.reset_extension
+    phone.rotary.when_pressed = phone.dialtone_stop
     while True:
         ####### DEBUG FUNCTIONS ########
         # Uncomment only one at a time #
