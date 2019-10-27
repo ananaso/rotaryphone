@@ -7,6 +7,7 @@ audiolocation = Path("/home/pi/Music")
 
 audio = {
     "dialtone":"US_dial_tone.ogg",
+    "operator":"operatorTone.m4a",
     "1031":"Spooky Scary Skeletons (Remix) - Extended Mix.mp3",
     "1003":"German_national_anthem_performed_by_the_US_Navy_Band.ogg",
     "2346":"C418 - Minecraft - Volume Alpha - 22 Beginning.mp3",

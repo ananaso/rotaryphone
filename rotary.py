@@ -81,6 +81,29 @@ class RotaryPhone:
             print("off")
         else:
             print("on")
+            
+    def play_audio(self, key):
+        """
+        Plays audio from audio database, and allows hook to interrupt. This
+        function plays a holding sound if the key is not found in the database.
+        """
+        # check if extension exists in dictionary
+        if key in RotaryAudio.audio:
+            # Get filename from dictionary
+            filename = RotaryAudio.audio[key]
+        # play holding sound if not found
+        else:
+            filename = RotaryAudio.audio["operator"] 
+        # build absolute filepath
+        filepath = RotaryAudio.audiolocation.joinpath(filename)
+        # play back audio with mpv
+        audioplayback = subprocess.Popen(["mpv",
+                                          "--really-quiet",
+                                          filepath])
+        # stop audio playback if hook is pressed
+        while audioplayback.poll() is None:
+            if self.hook.is_pressed:
+                audioplayback.terminate()
 
     def dialer_pulse(self):
         """
@@ -108,26 +131,13 @@ class RotaryPhone:
         if self.dialed_number > -1:
             self.extension += str(self.dialed_number)
         if len(self.extension) == 4:
-            # check if extension exists in dictionary
-            if self.extension in RotaryAudio.audio:
-                # Get filename from dictionary and build absolute filepath
-                filename = RotaryAudio.audio[self.extension]
-                filepath = RotaryAudio.audiolocation.joinpath(filename)
-                # play back audio with mpv
-                audioplayback = subprocess.Popen(["mpv",
-                                                  "--really-quiet",
-                                                  filepath])
-                # stop audio playback if hook is pressed
-                while audioplayback.poll() is None:
-                    if self.hook.is_pressed:
-                        audioplayback.terminate()
-            else:
-                print("Audio for", self.extension, "not found")
+            self.play_audio(self.extension)
             self.reset_extension()
 
 if __name__ == "__main__":
     phone = RotaryPhone()
     phone.hook.when_released = phone.reset_extension
+    phone.hook.when_pressed = phone.dialtone_stop
     phone.rotary.when_pressed = phone.dialtone_stop
     while True:
         ####### DEBUG FUNCTIONS ########
