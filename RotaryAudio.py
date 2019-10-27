@@ -17,6 +17,7 @@ audio = {
     "7346":"Rammstein - Untitled - Radio.mp3",
     "7936":"C418 - Minecraft - Volume Alpha - 18 Sweden.mp3",
     "9253":"wakeUp.m4a",
+    "0317":"The Wolfe Tones - Come Out Ye Black And Tans.mp3",
     "0501":"Gimn_Sovetskogo_Soyuza_(1944_Stalinist_lyrics).oga",
     "0704":"Star_Spangled_Banner_instrumental.ogg"
 }
