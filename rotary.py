@@ -81,7 +81,7 @@ class RotaryPhone:
             print("off")
         else:
             print("on")
-            
+
     def play_audio(self, key):
         """
         Plays audio from audio database, and allows hook to interrupt. This
@@ -93,7 +93,7 @@ class RotaryPhone:
             filename = RotaryAudio.audio[key]
         # play holding sound if not found
         else:
-            filename = RotaryAudio.audio["operator"] 
+            filename = RotaryAudio.audio["operator"]
         # build absolute filepath
         filepath = RotaryAudio.audiolocation.joinpath(filename)
         # play back audio with mpv
