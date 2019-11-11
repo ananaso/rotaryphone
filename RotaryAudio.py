@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Dictionary of audio files and associated extensions
 """
