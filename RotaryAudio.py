@@ -3,7 +3,8 @@
 Dictionary of audio files and associated extensions
 """
 from pathlib import Path
-import simpleaudio as sa
+from pygame import mixer
+import wave
 
 audiolocation = Path("/home/alden/Musik")
 
@@ -16,7 +17,7 @@ audio = {
     "2418":"C418 - Minecraft - Volume Alpha - 08 Minecraft.mp3",
     "2455":"might quit - Bill Wurtz.mp3",
     "3666":"Doot - E1M1 [Knee-Deep in the Doot].mp3",
-    "7346":"Rammstein - Untitled - Radio.mp3",
+    "7346":"Rammstein - Untitled - Radio.wav",
     "7936":"C418 - Minecraft - Volume Alpha - 18 Sweden.mp3",
     "9253":"wakeUp.m4a",
     "0317":"The Wolfe Tones - Come Out Ye Black And Tans.mp3",
@@ -25,12 +26,24 @@ audio = {
 }
 
 if __name__ == "__main__":
-    # SimpleAudio interruptable playback proof-of-concept
+    # Pygame interruptable playback proof-of-concept
+    mixer.init()
     SELECT = input("Audio #")
     PATH = audiolocation.joinpath(audio[SELECT])
-    SONG = sa.WaveObject.from_wave_file(str(PATH))
-    PLAYBACK = SONG.play()
-    while PLAYBACK.is_playing():
+    mixer.music.load(str(PATH))
+    mixer.music.play()
+    while mixer.music.get_busy():
         input("[ENTER] to stop playback")
-        PLAYBACK.stop()
+        mixer.music.stop()
+        mixer.quit()
+        break
+    # wav frequency setting is required to keep audio from being slow
+    WAV = wave.open(str(PATH))
+    FREQ = WAV.getframerate()
+    mixer.init(frequency=FREQ)
+    mixer.music.load(str(PATH))
+    mixer.music.play()
+    while mixer.music.get_busy():
+        input("[ENTER] to stop playback")
+        mixer.music.stop()
         break
