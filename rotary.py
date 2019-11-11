@@ -4,10 +4,34 @@ Raspberry Pi-controlled rotary phone that plays back audio given specific
 dialed numbers. Audio files are defined separately in RotaryAudio
 """
 
-import subprocess
 from time import sleep
+import wave
+from pygame import mixer
 from gpiozero import Button
 import RotaryAudio
+
+def _start_mixer(key, loop):
+    """
+    Helper function to launch the PyGame mixer with correct frequency. Assumes
+    key is valid.
+    """
+    filename = RotaryAudio.audio[key]
+    filepath = str(RotaryAudio.audiolocation.joinpath(filename))
+    # initialize mixer with same frequency (speed) as sound file
+    mixer.init(frequency=wave.open(filepath).getframerate())
+    # load and play the music, with -1 for infinite loop
+    mixer.music.load(filepath)
+    if loop:
+        mixer.music.play(loops=-1)
+    else:
+        mixer.music.play()
+
+def _stop_mixer():
+    """
+    Convenience wrapper to stop music
+    """
+    mixer.quit()
+
 
 class RotaryPhone:
     """
@@ -23,35 +47,13 @@ class RotaryPhone:
         self.dialed_number = -1
         self.extension = ""
         self.hook = Button(22, False)
-        self.dialtone = None
 
     def reset_extension(self):
         """
         Helper function to reset dialed extension
         """
         self.extension = ""
-        self.dialtone_start()
-
-    def dialtone_start(self):
-        """
-        Helper function to start the dialtone
-        """
-        if self.dialtone is None:
-            filename = RotaryAudio.audio["dialtone"]
-            filepath = RotaryAudio.audiolocation.joinpath(filename)
-            self.dialtone = subprocess.Popen(["mpv",
-                                              "--really-quiet",
-                                              "--ao=sdl",
-                                              "--loop-file=inf",
-                                              filepath])
-
-    def dialtone_stop(self):
-        """
-        Helper function to stop the dialtone
-        """
-        if self.dialtone is not None:
-            self.dialtone.terminate()
-            self.dialtone = None
+        _start_mixer("dialtone", True)
 
     def rotary_status(self):
         """
@@ -90,20 +92,14 @@ class RotaryPhone:
         # check if extension exists in dictionary
         if key in RotaryAudio.audio:
             # Get filename from dictionary
-            filename = RotaryAudio.audio[key]
+            _start_mixer(key, False)
         # play holding sound if not found
         else:
-            filename = RotaryAudio.audio["operator"]
-        # build absolute filepath
-        filepath = RotaryAudio.audiolocation.joinpath(filename)
-        # play back audio with mpv
-        audioplayback = subprocess.Popen(["mpv",
-                                          "--really-quiet",
-                                          filepath])
+            _start_mixer("operator", False)
         # stop audio playback if hook is pressed
-        while audioplayback.poll() is None:
+        while mixer.music.get_busy():
             if self.hook.is_pressed:
-                audioplayback.terminate()
+                _stop_mixer()
 
     def dialer_pulse(self):
         """
@@ -137,8 +133,8 @@ class RotaryPhone:
 if __name__ == "__main__":
     phone = RotaryPhone()
     phone.hook.when_released = phone.reset_extension
-    phone.hook.when_pressed = phone.dialtone_stop
-    phone.rotary.when_pressed = phone.dialtone_stop
+    phone.hook.when_pressed = _stop_mixer
+    phone.rotary.when_pressed = _stop_mixer
     while True:
         ####### DEBUG FUNCTIONS ########
         # Uncomment only one at a time #
