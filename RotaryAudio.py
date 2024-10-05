@@ -25,7 +25,7 @@ audio = {
     "0704":"Star_Spangled_Banner_instrumental.wav"
 }
 
-if __name__ == "__main__":
+def playback():
     # Pygame interruptable playback proof-of-concept
     mixer.init()
     SELECT = input("Audio #")
@@ -47,3 +47,6 @@ if __name__ == "__main__":
         input("[ENTER] to stop playback")
         mixer.music.stop()
         break
+
+if __name__ == "__main__":
+    playback()
