@@ -8,7 +8,7 @@
 
 ---
 
-- [ ] gdown script to download mom's audio files (fuzzy flag, ask for URL)
+- [ ] gdown script to download audio files (fuzzy flag, ask for URL)
 
 ---
 
