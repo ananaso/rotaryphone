@@ -6,10 +6,13 @@ the mapping between audio files and the code that plays them in rotary.py
 
 from enum import Enum
 from pythonclimenu import menu
+import re
 from RotaryAudio import audio
 
 class MainMenuOptions(Enum):
     LIST = "List current mappings"
+    ADD = "Add"
+    QADD = "Quick Add"
     QUIT = "Quit"
 
 def list_current_mappings():
@@ -19,6 +22,22 @@ def list_current_mappings():
         if (len(code) == 4):
             print("\t", code, " => ", filename)
     input("Press Enter to continue...")
+
+def add_new_mapping():
+    input("Please enter FIRST DIGIT of new code: ")
+
+def quick_add_new_mapping():
+    codeRegex = re.compile('\d{4}')
+    newCode = ''
+    errorMsg = ''
+    while (len(newCode) < 4 or len(newCode) > 4) or not codeRegex.match(newCode):
+        if len(errorMsg) > 0:
+            print(errorMsg)
+        newCode = input("Please enter new 4-digit code: ")
+        if len(newCode) < 4:
+            errorMsg = "Error: code is less than 4 digits"
+        elif len(newCode) > 4:
+            errorMsg = "Error: code is greater than 4 digits"
 
 
 def main_menu():
@@ -31,6 +50,10 @@ def main_menu():
         match mainMenu:
             case MainMenuOptions.LIST:
                 list_current_mappings()
+            case MainMenuOptions.ADD:
+                add_new_mapping()
+            case MainMenuOptions.QADD:
+                quick_add_new_mapping()
             case MainMenuOptions.QUIT:
                 break
             case _:
